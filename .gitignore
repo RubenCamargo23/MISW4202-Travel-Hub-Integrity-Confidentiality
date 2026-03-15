@@ -1,0 +1,10 @@
+.env
+*.db
+__pycache__/
+*.pyc
+venv/
+.vscode/
+.DS_Store
+auth.log
+audit.log
+reservation.log
