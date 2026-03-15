@@ -3,11 +3,21 @@ import logging
 from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), '../.env'))
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
+# Configure logging to both console and file
+log_formatter = logging.Formatter("%(asctime)s [%(name)s] %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.INFO)
+
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(log_formatter)
+root_logger.addHandler(console_handler)
+
+file_handler = logging.FileHandler(os.path.abspath(os.path.join(os.path.dirname(__file__), '../auth.log')))
+file_handler.setFormatter(log_formatter)
+root_logger.addHandler(file_handler)
+
+logger = logging.getLogger("auth-service")
+
 
 from flask import Flask
 from flask_cors import CORS
@@ -47,6 +57,8 @@ with app.app_context():
         db.session.add(Usuario(username="user_ar", password_hash=pwd_context.hash("user123"), rol="user", pais="AR"))
         db.session.add(Usuario(username="admin_co", password_hash=pwd_context.hash("admin123"), rol="admin", pais="CO"))
         db.session.commit()
+    logger.info("AUTH_SERVICE_STARTED | port=8000 | users_populated")
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 8000)), debug=False)

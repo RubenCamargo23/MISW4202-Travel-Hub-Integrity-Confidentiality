@@ -3,11 +3,21 @@ import logging
 from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), '../.env'))
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
+# Configure logging to both console and file
+log_formatter = logging.Formatter("%(asctime)s [%(name)s] %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.INFO)
+
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(log_formatter)
+root_logger.addHandler(console_handler)
+
+file_handler = logging.FileHandler(os.path.abspath(os.path.join(os.path.dirname(__file__), '../audit.log')))
+file_handler.setFormatter(log_formatter)
+root_logger.addHandler(file_handler)
+
+logger = logging.getLogger("audit-service")
+
 
 from flask import Flask
 from flask_cors import CORS
@@ -36,6 +46,8 @@ app = create_app()
 
 with app.app_context():
     db.create_all()
+    logger.info("AUDIT_SERVICE_STARTED | port=8001")
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 8001)), debug=False)

@@ -3,8 +3,8 @@ import logging
 from dotenv import load_dotenv
 
 # Use absolute path for .env to avoid issues
-env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../.env'))
-load_dotenv(env_path)
+load_dotenv(os.path.join(os.path.dirname(__file__), '../.env'))
+
 
 # Configure logging to both console and file
 log_formatter = logging.Formatter("%(asctime)s [%(name)s] %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
